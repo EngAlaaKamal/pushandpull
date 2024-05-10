@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Search</title>
+</head>
+<body>
+    <form id="searchForm">
+        <input type="text" name="keywords" placeholder="Search keywords">
+        <button type="submit">Search</button>
+    </form>
+    <div id="searchResults"></div>
+
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', function(event) {
+            event.preventDefault(); 
+            var formData = new FormData(this);
+
+          
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'http://localhost:8000/api/jobs/search?' + new URLSearchParams(formData).toString(), true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        var jobs = response.data; 
+                       
+                        var searchResultsDiv = document.getElementById('searchResults');
+                        jobs.forEach(function(job) {
+                            
+                            var jobDiv = document.createElement('div');
+                            jobDiv.textContent = 'Title: ' + job.title + ', Description: ' + job.description;
+                            searchResultsDiv.appendChild(jobDiv);
+                        });
+                    } else {
+                        console.error('Failed to fetch search results');
+                    }
+                }
+            };
+            xhr.send();
+        });
+    </script>
+</body>
+</html>

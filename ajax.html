@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Search</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <form id="searchForm">
+        <input type="text" name="keywords" placeholder="Search keywords">
+        <button type="submit">Search</button>
+    </form>
+    <div id="searchResults"></div>
+
+    <script>
+        $(document).ready(function() {
+            $('#searchForm').submit(function(event) {
+                event.preventDefault(); 
+                var formData = $(this).serialize();
+                $.ajax({
+                    method: 'GET',
+                    url: 'http://localhost:8000/api/jobs/search',
+                    data: formData,
+                    success: function(response) {
+                        var jobs = response.data;
+                        var searchResultsDiv = $('#searchResults');
+                        $.each(jobs, function(index, job) {
+                            var jobDiv = $('<div>').text('Title: ' + job.title + ', Description: ' + job.description);
+                            searchResultsDiv.append(jobDiv);
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Failed to fetch search results');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
